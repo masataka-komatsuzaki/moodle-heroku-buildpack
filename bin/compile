@@ -77,6 +77,8 @@ function download_url() {
 	curl -s -S -O -L -m 300 --connect-timeout 60 "$TARGET_URL"
 }
 
+mkdir -p $BUILD_DIR $CACHE_DIR ${BUNDLE_DIR} ${BUILD_DIR}/local
+
 echo "-----> Fetching Manifest"
 echo ${MANIFEST_URL} | indent
 download_url ${MANIFEST_URL}
@@ -119,6 +121,7 @@ export PHP_INI_SCAN_DIR=/app/www
 echo "Launching apache"
 exec /app/apache/bin/httpd -DNO_DETACH
 
+cd $BUILD_DIR
 # Set NEWRELIC key
 if [ -x "/app/ext/bin/newrelic-license" ]; then
 	/app/ext/bin/newrelic-license
