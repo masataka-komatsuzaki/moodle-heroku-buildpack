@@ -78,6 +78,7 @@ function download_url() {
 }
 
 mkdir -p $BUILD_DIR $CACHE_DIR ${BUNDLE_DIR} ${BUILD_DIR}/local
+pushd ${BUNDLE_DIR} > /dev/null
 
 echo "-----> Fetching Manifest"
 echo ${MANIFEST_URL} | indent
