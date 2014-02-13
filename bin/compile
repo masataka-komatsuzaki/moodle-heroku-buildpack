@@ -10,18 +10,9 @@ APACHE_PATH="apache"
 PHP_VERSION="5.4.11"
 PHP_PATH="php"
 
-NEWRELIC_VERSION=2.9.5.78
-S3_BUCKET=heroku-buildpack-php-tyler
-S3_URL="https://s3.amazonaws.com/${S3_BUCKET}"
-NEWRELIC_FILE="newrelic-${NEWRELIC_VERSION}-heroku.tar.gz"
-NEWRELIC_URL="${S3_URL}/${NEWRELIC_FILE}"
-MANIFEST_FILE="manifest.md5sum"
-MANIFEST_URL="${S3_URL}/${MANIFEST_FILE}"
-
 BIN_DIR=$(dirname $0)
 BUILD_DIR=$1
 CACHE_DIR=$2
-BUNDLE_DIR="${CACHE_DIR}/bundles"
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 
 # include .files when moving things around
@@ -57,56 +48,6 @@ cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
 mkdir -p bin
 ln -s /app/php/bin/php bin/php
 
-function indent() {
-	c='s/^/       /'
-	case $(uname) in
-		Darwin) sed -l "$c";;
-		*)      sed -u "$c";;
-	esac
-}
-
-function check_md5() {
-	SUMS_FILE="${BUNDLE_DIR}/${MANIFEST_FILE}"
-	TARGET="$1"
-	SUM=`cat "${SUMS_FILE}" | grep "${TARGET}" | cut -d ' ' -f 1`
-	OUTPUT=`md5sum ${BUNDLE_DIR}/${TARGET} | cut -d ' ' -f 1`
-	! [ "$SUM" = "$OUTPUT" ]
-}
-
-function download_url() {
-	TARGET_URL="$1"
-	curl -s -S -O -L -m 300 --connect-timeout 60 "$TARGET_URL"
-}
-
-mkdir -p $BUILD_DIR $CACHE_DIR ${BUNDLE_DIR} ${BUILD_DIR}/local
-pushd ${BUNDLE_DIR} > /dev/null
-
-echo "-----> Fetching Manifest"
-echo ${MANIFEST_URL} | indent
-download_url ${MANIFEST_URL}
-
-# newrelic
-echo "-----> Installing newrelic"
-if [ -f "${NEWRELIC_FILE}" ]
-then
-	if check_md5 "${NEWRELIC_FILE}"
-	then
-		echo "Bundling newrelic daemon v${NEWRELIC_VERSION}" | indent
-		echo ${NEWRELIC_URL} | indent
-		download_url ${NEWRELIC_URL}
-	else
-		echo "Using cached newrelic daemon v${NEWRELIC_VERSION}" | indent
-	fi
-else
-	echo "Bundling newrelic daemon v${NEWRELIC_VERSION}" | indent
-	echo ${NEWRELIC_URL} | indent
-	download_url ${NEWRELIC_URL}
-fi
-
-tar xzf ${NEWRELIC_FILE} -C ${BUILD_DIR}/local
-
-popd > /dev/null
-
 # create mahara data folder
 mkdir -p /app/moodledata
 
@@ -122,13 +63,6 @@ export LD_LIBRARY_PATH=/app/php/ext
 export PHP_INI_SCAN_DIR=/app/www
 echo "Launching apache"
 exec /app/apache/bin/httpd -DNO_DETACH
-
-cd $BUILD_DIR
-# Set NEWRELIC key
-if [ -x "/app/local/bin/newrelic-license" ]; then
-	/app/local/bin/newrelic-license
-fi
-
 EOF
 
 chmod +x boot.sh
