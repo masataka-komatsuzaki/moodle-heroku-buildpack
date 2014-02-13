@@ -21,6 +21,7 @@ MANIFEST_URL="${S3_URL}/${MANIFEST_FILE}"
 BIN_DIR=$(dirname $0)
 BUILD_DIR=$1
 CACHE_DIR=$2
+BUNDLE_DIR="${CACHE_DIR}/bundles"
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 
 # include .files when moving things around
