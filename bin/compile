@@ -10,13 +10,13 @@ APACHE_PATH="apache"
 PHP_VERSION="5.4.11"
 PHP_PATH="php"
 
-MANIFEST_FILE="manifest.md5sum"
-MANIFEST_URL="${S3_URL}/${MANIFEST_FILE}"
 NEWRELIC_VERSION=2.9.5.78
 S3_BUCKET=heroku-buildpack-php-tyler
 S3_URL="https://s3.amazonaws.com/${S3_BUCKET}"
 NEWRELIC_FILE="newrelic-${NEWRELIC_VERSION}-heroku.tar.gz"
 NEWRELIC_URL="${S3_URL}/${NEWRELIC_FILE}"
+MANIFEST_FILE="manifest.md5sum"
+MANIFEST_URL="${S3_URL}/${MANIFEST_FILE}"
 
 BIN_DIR=$(dirname $0)
 BUILD_DIR=$1
