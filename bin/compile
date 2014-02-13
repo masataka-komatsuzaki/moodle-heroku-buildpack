@@ -101,7 +101,7 @@ else
 	download_url ${NEWRELIC_URL}
 fi
 
-tar xzf ${NEWRELIC_FILE} -C ${BUILD_DIR}/ext
+tar xzf ${NEWRELIC_FILE} -C ${BUILD_DIR}/local
 
 popd > /dev/null
 
@@ -123,8 +123,8 @@ exec /app/apache/bin/httpd -DNO_DETACH
 
 cd $BUILD_DIR
 # Set NEWRELIC key
-if [ -x "/app/ext/bin/newrelic-license" ]; then
-	/app/ext/bin/newrelic-license
+if [ -x "/app/local/bin/newrelic-license" ]; then
+	/app/local/bin/newrelic-license
 fi
 
 EOF
