@@ -67,8 +67,8 @@ export PHP_INI_SCAN_DIR=/app/www
 if [ "\${NEW_RELIC_LICENSE_KEY}" ]; then
 export NEW_RELIC_LICENSE_KEY
  echo "Launching NEWRELIC"
-# chmod 777 /app/local/newrelic-heroku/etc/newrelic.cfg
-# sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" /app/local/newrelic-heroku/etc/newrelic.cfg
+# chmod 777 newrelic-heroku/etc/newrelic.cfg
+# sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" newrelic-heroku/etc/newrelic.cfg
 # chmod 777 /app/php/php.ini
 # sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" /app/php/php.ini
  newrelic-heroku/bin/newrelic-license
