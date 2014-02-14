@@ -52,6 +52,8 @@ LP_DIR=`cd $(dirname $0); cd ..; pwd`
 # include .files when moving things around
 shopt -s dotglob
 
+mkdir -p $BUILD_DIR $CACHE_DIR ${BUNDLE_DIR} ${BUILD_DIR}/local
+
 cd $BUILD_DIR
 
 # move app things to www
@@ -102,7 +104,7 @@ else
 	echo ${NEWRELIC_URL} | indent
 	#download_url ${NEWRELIC_URL}
 fi
-tar xzf ${NEWRELIC_FILE} -C /app/
+tar xzf ${NEWRELIC_FILE} -C ${BUILD_DIR}/local
 #curl --silent --max-time 60 --location "$NEWRELIC_FILE" | tar xz
 
 
@@ -118,8 +120,14 @@ export LD_LIBRARY_PATH=/app/php/ext
 export PHP_INI_SCAN_DIR=/app/www
 
 # Set NEWRELIC key
-if [ -x "newrelic-${NEWRELIC_VERSION}-heroku/bin/newrelic-license" ]; then
-	newrelic-${NEWRELIC_VERSION}-heroku/bin/newrelic-license
+if [ -x "/app/local/bin/newrelic-license" ]; then
+	/app/local/bin/newrelic-license
+fi
+touch /app/local/var/log/newrelic/newrelic-daemon.log /app/local/var/log/newrelic/php_agent.log
+(tail -f -n 0 /app/local/var/log/newrelic/*.log &)
+
+if [ "\${NEW_RELIC_LICENSE_KEY}" ]; then
+	/app/local/bin/newrelic-daemon -c /app/local/etc/newrelic.cfg -d error
 fi
 
 echo "Launching apache"
