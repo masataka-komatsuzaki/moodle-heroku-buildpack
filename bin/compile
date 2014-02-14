@@ -11,6 +11,39 @@ PHP_VERSION="5.4.11"
 PHP_PATH="php"
 export NEW_RELIC_LICENSE_KEY="4e09c83d11e5c42a98b4fdcaf31ad40b1f4a11a7"
 
+
+NEWRELIC_VERSION=2.9.5.78
+S3_BUCKET=heroku-buildpack-php-tyler
+S3_URL="https://s3.amazonaws.com/${S3_BUCKET}"
+
+MANIFEST_FILE="manifest.md5sum"
+NEWRELIC_FILE="newrelic-${NEWRELIC_VERSION}-heroku.tar.gz"
+
+MANIFEST_URL="${S3_URL}/${MANIFEST_FILE}"
+NEWRELIC_URL="${S3_URL}/${NEWRELIC_FILE}"
+
+function indent() {
+	c='s/^/       /'
+	case $(uname) in
+		Darwin) sed -l "$c";;
+		*)      sed -u "$c";;
+	esac
+}
+
+function check_md5() {
+	SUMS_FILE="${BUNDLE_DIR}/${MANIFEST_FILE}"
+	TARGET="$1"
+	SUM=`cat "${SUMS_FILE}" | grep "${TARGET}" | cut -d ' ' -f 1`
+	OUTPUT=`md5sum ${BUNDLE_DIR}/${TARGET} | cut -d ' ' -f 1`
+	! [ "$SUM" = "$OUTPUT" ]
+}
+
+function download_url() {
+	TARGET_URL="$1"
+	curl -s -S -O -L -m 300 --connect-timeout 60 "$TARGET_URL"
+}
+
+
 BIN_DIR=$(dirname $0)
 BUILD_DIR=$1
 CACHE_DIR=$2
@@ -44,7 +77,6 @@ cp $LP_DIR/conf/httpd.conf $APACHE_PATH/conf
 cp $LP_DIR/conf/php.ini $PHP_PATH
 PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/no-debug-zts-20100525"
 cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
-#cp $LP_DIR/ext/newrelic.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
 
 # make php available on bin
 mkdir -p bin
@@ -52,6 +84,29 @@ ln -s /app/php/bin/php bin/php
 
 # create mahara data folder
 mkdir -p /app/moodledata
+
+# newrelic
+echo "-----> Installing newrelic"
+if [ -f "${NEWRELIC_FILE}" ]
+then
+	if check_md5 "${NEWRELIC_FILE}"
+	then
+		echo "Bundling newrelic daemon v${NEWRELIC_VERSION}" | indent
+		echo ${NEWRELIC_URL} | indent
+		download_url ${NEWRELIC_URL}
+	else
+		echo "Using cached newrelic daemon v${NEWRELIC_VERSION}" | indent
+	fi
+else
+	echo "Bundling newrelic daemon v${NEWRELIC_VERSION}" | indent
+	echo ${NEWRELIC_URL} | indent
+	download_url ${NEWRELIC_URL}
+fi
+
+tar xzf ${NEWRELIC_FILE} -C ${BUILD_DIR}
+
+popd > /dev/null
+
 
 cat >>boot.sh <<EOF
 for var in ¥`env|cut -f1 -d=¥`; do
@@ -64,17 +119,9 @@ tail -F /app/apache/logs/access_log &
 export LD_LIBRARY_PATH=/app/php/ext
 export PHP_INI_SCAN_DIR=/app/www
 
-if [ "\${NEW_RELIC_LICENSE_KEY}" ]; then
-export NEW_RELIC_LICENSE_KEY
- echo "Launching NEWRELIC"
-# chmod 777 newrelic-heroku/etc/newrelic.cfg
-# sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" newrelic-heroku/etc/newrelic.cfg
-# chmod 777 /app/php/php.ini
-# sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" /app/php/php.ini
- newrelic-heroku/bin/newrelic-license
- newrelic-heroku/bin/newrelic-daemon -c newrelic-heroku/etc/newrelic.cfg -l /dev/null
-else
- echo "Launching newrelic error: No license key"
+# Set NEWRELIC key
+if [ -x "newrelic-${NEWRELIC_VERSION}-heroku/bin/newrelic-license" ]; then
+	newrelic-${NEWRELIC_VERSION}-heroku/bin/newrelic-license
 fi
 
 echo "Launching apache"
@@ -82,15 +129,6 @@ exec /app/apache/bin/httpd -DNO_DETACH
 
 EOF
 
-# newrelic
-if [ "\${NEW_RELIC_LICENSE_KEY}" ]; then
- echo "-----> Installing newrelic"
- #tar zxvf $LP_DIR/ext/newrelic-heroku.tgz -C ${BUILD_DIR}/local
- tar zxvf $LP_DIR/ext/newrelic-heroku.tgz -C ${BUILD_DIR}/
- cp $LP_DIR/ext/newrelic.so newrelic-heroku/
-else
- echo "Installing newrelic error: No license key"
-fi
 
 chmod +x boot.sh
 
