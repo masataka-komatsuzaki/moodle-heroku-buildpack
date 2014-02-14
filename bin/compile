@@ -93,17 +93,17 @@ then
 	then
 		echo "Bundling newrelic daemon v${NEWRELIC_VERSION}" | indent
 		echo ${NEWRELIC_URL} | indent
-		#download_url ${NEWRELIC_URL}
+		download_url ${NEWRELIC_URL}
 	else
 		echo "Using cached newrelic daemon v${NEWRELIC_VERSION}" | indent
 	fi
 else
 	echo "Bundling newrelic daemon v${NEWRELIC_VERSION}" | indent
 	echo ${NEWRELIC_URL} | indent
-	#download_url ${NEWRELIC_URL}
+	download_url ${NEWRELIC_URL}
 fi
-
-curl --silent --max-time 60 --location "$NEWRELIC_FILE" | tar xz
+tar xzf ${NEWRELIC_FILE} -C ${BUILD_DIR}/local
+#curl --silent --max-time 60 --location "$NEWRELIC_FILE" | tar xz
 
 
 cat >>boot.sh <<EOF
