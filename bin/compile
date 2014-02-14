@@ -90,6 +90,7 @@ mkdir -p /app/moodledata
 
 pushd ${BUNDLE_DIR} > /dev/null
 # newrelic
+cd $BUILD_DIR
 echo "-----> Installing newrelic"
 if [ -f "${NEWRELIC_FILE}" ]
 then
