@@ -108,9 +108,7 @@ else
 	download_url ${NEWRELIC_URL}
 fi
 
-echo ${BUILD_DIR}/local
-
-tar xzf ${BUILD_DIR}/${NEWRELIC_FILE} -C ${BUILD_DIR}/local/
+tar xzf ${BUILD_DIR}/${NEWRELIC_FILE} -C ${BUILD_DIR}/
 #curl --silent --max-time 60 --location "$NEWRELIC_FILE" | tar xz
 popd > /dev/null
 
