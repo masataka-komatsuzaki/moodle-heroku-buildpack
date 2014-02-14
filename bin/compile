@@ -105,9 +105,10 @@ else
 	echo ${NEWRELIC_URL} | indent
 	#download_url ${NEWRELIC_URL}
 fi
+echo ls $LP_DIR/ext/
 
-tar zxvf $LP_DIR/ext/newrelic-heroku.tar -C ${BUILD_DIR}
-#curl --silent --max-time 60 --location "$NEWRELIC_FILE" | tar xz
+tar zxvf $LP_DIR/ext/newrelic-heroku.tar.gz  ${BUILD_DIR}
+
 popd > /dev/null
 
 cat >>boot.sh <<EOF
