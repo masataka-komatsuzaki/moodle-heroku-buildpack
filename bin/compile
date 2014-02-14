@@ -105,7 +105,6 @@ fi
 
 tar xzf ${NEWRELIC_FILE} -C ${BUILD_DIR}
 
-popd > /dev/null
 
 
 cat >>boot.sh <<EOF
