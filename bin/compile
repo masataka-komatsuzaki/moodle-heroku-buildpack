@@ -11,7 +11,8 @@ PHP_VERSION="5.4.11"
 PHP_PATH="php"
 export NEW_RELIC_LICENSE_KEY="4e09c83d11e5c42a98b4fdcaf31ad40b1f4a11a7"
 
-
+S3_BUCKET=heroku-buildpack-php-tyler
+S3_URL="https://s3.amazonaws.com/${S3_BUCKET}"
 
 MANIFEST_FILE="manifest.md5sum"
 NEWRELIC_FILE="newrelic-${NEWRELIC_VERSION}-heroku.tar.gz"
@@ -86,11 +87,8 @@ ln -s /app/php/bin/php bin/php
 mkdir -p /app/moodledata
 
 pushd ${BUNDLE_DIR} > /dev/null
+
 # newrelic
-cd $BUILD_DIR
-
-mkdir -p /app/local
-
 echo "-----> Installing newrelic"
 if [ -f "${NEWRELIC_FILE}" ]
 then
@@ -108,7 +106,7 @@ else
 	#download_url ${NEWRELIC_URL}
 fi
 
-tar zxvf $LP_DIR/ext/newrelic-heroku.tar -C ${BUILD_DIR}/local
+tar zxvf $LP_DIR/ext/newrelic-heroku.tar -C ${BUILD_DIR}
 #curl --silent --max-time 60 --location "$NEWRELIC_FILE" | tar xz
 popd > /dev/null
 
