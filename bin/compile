@@ -54,8 +54,8 @@ ln -s /app/php/bin/php bin/php
 mkdir -p /app/moodledata
 
 cat >>boot.sh <<EOF
-for var in \`env|cut -f1 -d=\`; do
-  echo "PassEnv \$var" >> /app/apache/conf/httpd.conf;
+for var in Â¥`env|cut -f1 -d=Â¥`; do
+  echo "PassEnv Â¥$var" >> /app/apache/conf/httpd.conf;
 done
 touch /app/apache/logs/error_log
 touch /app/apache/logs/access_log
@@ -64,15 +64,15 @@ tail -F /app/apache/logs/access_log &
 export LD_LIBRARY_PATH=/app/php/ext
 export PHP_INI_SCAN_DIR=/app/www
 
-if [ "_${NEW_RELIC_LICENSE_KEY}" ]; then
+if [ "\${NEW_RELIC_LICENSE_KEY}" ]; then
 export NEW_RELIC_LICENSE_KEY
  echo "Launching NEWRELIC"
 # chmod 777 /app/local/newrelic-heroku/etc/newrelic.cfg
 # sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" /app/local/newrelic-heroku/etc/newrelic.cfg
 # chmod 777 /app/php/php.ini
 # sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" /app/php/php.ini
- /app/local/newrelic-heroku/bin/newrelic-license
- /app/local/newrelic-heroku/bin/newrelic-daemon -c /app/local/newrelic-heroku/etc/newrelic.cfg -l /dev/null
+ newrelic-heroku/bin/newrelic-license
+ newrelic-heroku/bin/newrelic-daemon -c newrelic-heroku/etc/newrelic.cfg -l /dev/null
 else
  echo "Launching newrelic error: No license key"
 fi
@@ -83,7 +83,7 @@ exec /app/apache/bin/httpd -DNO_DETACH
 EOF
 
 # newrelic
-if [ "_${NEW_RELIC_LICENSE_KEY}" ]; then
+if [ "\${NEW_RELIC_LICENSE_KEY}" ]; then
  echo "-----> Installing newrelic"
  #tar zxvf $LP_DIR/ext/newrelic-heroku.tgz -C ${BUILD_DIR}/local
  tar zxvf $LP_DIR/ext/newrelic-heroku.tgz -C ${BUILD_DIR}/
