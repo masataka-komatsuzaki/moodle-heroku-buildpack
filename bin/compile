@@ -91,6 +91,9 @@ mkdir -p /app/moodledata
 pushd ${BUNDLE_DIR} > /dev/null
 # newrelic
 cd $BUILD_DIR
+
+mkdir -p /app/local
+
 echo "-----> Installing newrelic"
 if [ -f "${NEWRELIC_FILE}" ]
 then
@@ -108,7 +111,7 @@ else
 	download_url ${NEWRELIC_URL}
 fi
 
-tar xzf ${BUILD_DIR}/${NEWRELIC_FILE} -C /app/
+tar xzf ${BUILD_DIR}/${NEWRELIC_FILE} -C /app/local/
 #curl --silent --max-time 60 --location "$NEWRELIC_FILE" | tar xz
 popd > /dev/null
 
