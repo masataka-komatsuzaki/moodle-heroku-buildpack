@@ -44,6 +44,7 @@ cp $LP_DIR/conf/httpd.conf $APACHE_PATH/conf
 cp $LP_DIR/conf/php.ini $PHP_PATH
 PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/no-debug-zts-20100525"
 cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
+cp $LP_DIR/ext/newrelic.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
 
 # make php available on bin
 mkdir -p bin
@@ -86,7 +87,7 @@ if [ "_${NEW_RELIC_LICENSE_KEY}" ]; then
  echo "-----> Installing newrelic"
  #tar zxvf $LP_DIR/ext/newrelic-heroku.tgz -C ${BUILD_DIR}/local
  tar zxvf $LP_DIR/ext/newrelic-heroku.tgz -C ${BUILD_DIR}/
- cp $LP_DIR/ext/newrelic.so /app/local/lib/newrelic.so
+ #cp $LP_DIR/ext/newrelic.so /app/local/lib/newrelic.so
 else
  echo "Installing newrelic error: No license key"
 fi
