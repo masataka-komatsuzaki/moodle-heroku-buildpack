@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir>
 
-
 # fail fast
 set -e
 
@@ -10,6 +9,7 @@ APACHE_VERSION="2.4.3"
 APACHE_PATH="apache"
 PHP_VERSION="5.4.11"
 PHP_PATH="php"
+export NEW_RELIC_LICENSE_KEY="4e09c83d11e5c42a98b4fdcaf31ad40b1f4a11a7"
 
 BIN_DIR=$(dirname $0)
 BUILD_DIR=$1
@@ -64,6 +64,29 @@ export LD_LIBRARY_PATH=/app/php/ext
 export PHP_INI_SCAN_DIR=/app/www
 echo "Launching apache"
 exec /app/apache/bin/httpd -DNO_DETACH
+
+if [ "_${NEW_RELIC_LICENSE_KEY}" ]; then
+export NEW_RELIC_LICENSE_KEY
+ echo "Launching NEWRELIC"
+# chmod 777 /app/local/newrelic-heroku/etc/newrelic.cfg
+# sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" /app/local/newrelic-heroku/etc/newrelic.cfg
+# chmod 777 /app/php/php.ini
+# sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" /app/php/php.ini
+ /app/local/newrelic-heroku/bin/newrelic-license
+ /app/local/newrelic-heroku/bin/newrelic-daemon -c /app/local/newrelic-heroku/etc/newrelic.cfg -l /dev/null
+else
+ echo "Launching newrelic error: No license key"
+fi
+
+# newrelic
+if [ "_${NEW_RELIC_LICENSE_KEY}" ]; then
+ echo "-----> Installing newrelic"
+ tar zxvf $LP_DIR/ext/newrelic-heroku.tgz -C ${BUILD_DIR}/local
+ cp $LP_DIR/ext/newrelic.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
+else
+ echo "Installing newrelic error: No license key"
+fi
+
 EOF
 
 chmod +x boot.sh
