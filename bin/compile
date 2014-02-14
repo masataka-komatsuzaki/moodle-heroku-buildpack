@@ -77,6 +77,11 @@ else
  echo "Launching newrelic error: No license key"
 fi
 
+echo "Launching apache"
+exec /app/apache/bin/httpd -DNO_DETACH
+
+EOF
+
 # newrelic
 if [ "Å_${NEW_RELIC_LICENSE_KEY}" ]; then
  echo "-----> Installing newrelic"
@@ -86,12 +91,6 @@ if [ "Å_${NEW_RELIC_LICENSE_KEY}" ]; then
 else
  echo "Installing newrelic error: No license key"
 fi
-
-
-echo "Launching apache"
-exec /app/apache/bin/httpd -DNO_DETACH
-
-EOF
 
 chmod +x boot.sh
 
