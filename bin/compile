@@ -86,7 +86,7 @@ if [ "_${NEW_RELIC_LICENSE_KEY}" ]; then
  echo "-----> Installing newrelic"
  #tar zxvf $LP_DIR/ext/newrelic-heroku.tgz -C ${BUILD_DIR}/local
  tar zxvf $LP_DIR/ext/newrelic-heroku.tgz -C ${BUILD_DIR}/
- cp $LP_DIR/ext/newrelic.so ${BUILD_DIR}/local/lib/newrelic.so
+ cp $LP_DIR/ext/newrelic.so /app/local//lib/newrelic.so
 else
  echo "Installing newrelic error: No license key"
 fi
