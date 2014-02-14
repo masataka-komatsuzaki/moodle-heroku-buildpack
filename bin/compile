@@ -52,6 +52,7 @@ LP_DIR=`cd $(dirname $0); cd ..; pwd`
 # include .files when moving things around
 shopt -s dotglob
 
+BUNDLE_DIR="${CACHE_DIR}/bundles"
 mkdir -p $BUILD_DIR $CACHE_DIR ${BUNDLE_DIR} ${BUILD_DIR}/local
 
 cd $BUILD_DIR
@@ -87,6 +88,7 @@ ln -s /app/php/bin/php bin/php
 # create mahara data folder
 mkdir -p /app/moodledata
 
+pushd ${BUNDLE_DIR} > /dev/null
 # newrelic
 echo "-----> Installing newrelic"
 if [ -f "${NEWRELIC_FILE}" ]
@@ -106,7 +108,7 @@ else
 fi
 tar xzf ${NEWRELIC_FILE} -C ${BUILD_DIR}/local
 #curl --silent --max-time 60 --location "$NEWRELIC_FILE" | tar xz
-
+popd > /dev/null
 
 cat >>boot.sh <<EOF
 for var in ¥`env|cut -f1 -d=¥`; do
