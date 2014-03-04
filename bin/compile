@@ -35,7 +35,7 @@ APACHE_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/apache-$AP
 echo "-----> Bundling Apache version $APACHE_VERSION"
 curl --silent --max-time 60 --location "$APACHE_URL" | tar xz
 
-PHP_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/php-$PHP_VERSION.tar.gz"
+#PHP_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/php-$PHP_VERSION.tar.gz"
 PHP_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/php-$PHP_VERSION.tar.gz"
 echo "-----> Bundling PHP version $PHP_VERSION"
 curl --silent --max-time 60 --location "$PHP_URL" | tar xz
@@ -44,7 +44,7 @@ curl --silent --max-time 60 --location "$PHP_URL" | tar xz
 cp $LP_DIR/conf/httpd.conf $APACHE_PATH/conf
 cp $LP_DIR/conf/php.ini $PHP_PATH
 PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/no-debug-zts-20100525"
-cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
+cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525
 
 # make php available on bin
 mkdir -p bin
