@@ -5,9 +5,9 @@
 set -e
 
 # config
-APACHE_VERSION="2.4.3"
+APACHE_VERSION="2.2.22"
 APACHE_PATH="apache"
-PHP_VERSION="5.4.11"
+PHP_VERSION="5.3.10"
 PHP_PATH="php"
 
 BIN_DIR=$(dirname $0)
@@ -30,11 +30,13 @@ if [ -f www/Procfile ]; then
   mv www/Procfile .
 fi
 
-APACHE_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/apache-$APACHE_VERSION.tar.gz"
+#APACHE_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/apache-$APACHE_VERSION.tar.gz"
+APACHE_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/apache-$APACHE_VERSION.tar.gz"
 echo "-----> Bundling Apache version $APACHE_VERSION"
 curl --silent --max-time 60 --location "$APACHE_URL" | tar xz
 
 PHP_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/php-$PHP_VERSION.tar.gz"
+PHP_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/php-$PHP_VERSION.tar.gz"
 echo "-----> Bundling PHP version $PHP_VERSION"
 curl --silent --max-time 60 --location "$PHP_URL" | tar xz
 
