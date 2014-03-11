@@ -79,7 +79,8 @@ if [[ -n "$SSH_BUNDLE_URL" && -n "$SSH_BUNDLE_PASSWORD" ]]; then
 fi
 
 echo "Installing Composer binary"
-curl -s https://getcomposer.org/installer | $BUILD_DIR/bin/php -- --install-dir=bin
+#curl -s https://getcomposer.org/installer | $BUILD_DIR/bin/php -- --install-dir=bin
+curl -s https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/installer | $BUILD_DIR/bin/php -- --install-dir=bin
 mv bin/composer.phar bin/composer
 
 if [ -f $BUILD_DIR/www/composer.json ]; then
