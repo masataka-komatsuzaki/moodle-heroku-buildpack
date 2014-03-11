@@ -5,9 +5,9 @@
 set -e
 
 # config
-APACHE_VERSION="2.2.22"
+APACHE_VERSION="2.4.7"
 APACHE_PATH="apache"
-PHP_VERSION="5.3.10"
+PHP_VERSION="5.4.25"
 PHP_PATH="php"
 
 BIN_DIR=$(dirname $0)
@@ -31,7 +31,7 @@ if [ -f www/Procfile ]; then
 fi
 
 #APACHE_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/apache-$APACHE_VERSION.tar.gz"
-APACHE_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/apache-$APACHE_VERSION.tar.gz"
+#APACHE_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/apache-$APACHE_VERSION.tar.gz"
 echo "-----> Bundling Apache version $APACHE_VERSION"
 curl --silent --max-time 60 --location "$APACHE_URL" | tar xz
 
@@ -43,12 +43,12 @@ curl --silent --max-time 60 --location "$PHP_URL" | tar xz
 # update config files
 cp $LP_DIR/conf/httpd.conf $APACHE_PATH/conf
 cp $LP_DIR/conf/php.ini $PHP_PATH
-#PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/no-debug-zts-20100525"
+PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/no-debug-zts-20100525"
 
 PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/ext"
 
-#cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
-cp $LP_DIR/ext/zip.so $(pwd)/php/ext
+cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
+#cp $LP_DIR/ext/zip.so $(pwd)/php/ext
 
 # make php available on bin
 mkdir -p bin
@@ -58,8 +58,8 @@ ln -s /app/php/bin/php bin/php
 mkdir -p /app/moodledata
 
 cat >>boot.sh <<EOF
-for var in \`env|cut -f1 -d=\`; do
-  echo "PassEnv \$var" >> /app/apache/conf/httpd.conf;
+for var in ¥`env|cut -f1 -d=¥`; do
+  echo "PassEnv ¥$var" >> /app/apache/conf/httpd.conf;
 done
 touch /app/apache/logs/error_log
 touch /app/apache/logs/access_log
