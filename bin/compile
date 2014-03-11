@@ -41,8 +41,8 @@ curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL" | tar xz
 cp $LP_DIR/conf/httpd.conf $APACHE_PATH/conf
 cp $LP_DIR/conf/php.ini php
 cp $LP_DIR/conf/php-fpm.conf $BUILD_DIR/php/etc/
-PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/no-debug-zts-20100525"
-cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
+PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/ext"
+cp $LP_DIR/ext/zip.so $(pwd)/php/ext/
 
 # make php available on bin wtih symbolic link, use relative path so it works when remounted
 mkdir bin
