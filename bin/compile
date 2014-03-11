@@ -34,7 +34,6 @@ fi
 APACHE_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/apache-$APACHE_VERSION.tar.gz"
 echo "-----> Bundling Apache version $APACHE_VERSION"
 curl --silent --max-time 60 --location "$APACHE_URL" | tar xz
-#curl --silent --max-time 60 --location "$APACHE_URL" 
 
 #PHP_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/php-$PHP_VERSION.tar.gz"
 PHP_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/php-$PHP_VERSION.tar.gz"
@@ -48,8 +47,6 @@ PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/n
 PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/ext"
 
 cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
-#cp $LP_DIR/ext/zip.so $(pwd)/php/ext
-
 # make php available on bin
 mkdir -p bin
 ln -s /app/php/bin/php bin/php
@@ -68,7 +65,8 @@ tail -F /app/apache/logs/access_log &
 export LD_LIBRARY_PATH=/app/php/ext
 export PHP_INI_SCAN_DIR=/app/www
 echo "Launching apache"
-exec /app/apache/bin/httpd -DNO_DETACH
+#exec /app/apache/bin/httpd -DNO_DETACH
+#exec /app/apache/bin/httpd -X
 EOF
 
 chmod +x boot.sh
