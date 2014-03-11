@@ -35,7 +35,7 @@ fi
 echo "-----> Bundling Apache version $APACHE_VERSION"
 #curl --silent --max-time 60 --location "$APACHE_URL" | tar xz
 curl --silent --max-time 60 --location "$APACHE_URL" 
-gzip -d ./apache-$APACHE_VERSION.tar.gz
+gzip  ./apache-$APACHE_VERSION.tar.gz
 tar xvf apache-$APACHE_VERSION.tar
 
 #PHP_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/php-$PHP_VERSION.tar.gz"
