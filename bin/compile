@@ -31,12 +31,10 @@ if [ -f www/Procfile ]; then
 fi
 
 #APACHE_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/apache-$APACHE_VERSION.tar.gz"
-#APACHE_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/apache-$APACHE_VERSION.tar.gz"
+APACHE_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/apache-$APACHE_VERSION.tar.gz"
 echo "-----> Bundling Apache version $APACHE_VERSION"
-#curl --silent --max-time 60 --location "$APACHE_URL" | tar xz
-curl --silent --max-time 60 --location "$APACHE_URL" 
-gzip apache-$APACHE_VERSION.tar.gz
-tar xvf apache-$APACHE_VERSION.tar
+curl --silent --max-time 60 --location "$APACHE_URL" | tar xz
+#curl --silent --max-time 60 --location "$APACHE_URL" 
 
 #PHP_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/php-$PHP_VERSION.tar.gz"
 PHP_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/php-$PHP_VERSION.tar.gz"
