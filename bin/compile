@@ -42,7 +42,7 @@ cp $LP_DIR/conf/httpd.conf $APACHE_PATH/conf
 cp $LP_DIR/conf/php.ini php
 cp $LP_DIR/conf/php-fpm.conf $BUILD_DIR/php/etc/
 #PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/ext"
-#cp $LP_DIR/ext/zip.so $(pwd)/php/ext/
+cp $LP_DIR/ext/zip.so /app/php/lib/php/extensions/no-debug-non-zts-20121212/
 
 # make php available on bin wtih symbolic link, use relative path so it works when remounted
 mkdir bin
