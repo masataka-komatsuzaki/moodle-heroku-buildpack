@@ -12,7 +12,6 @@ PHP_PATH="php"
 BUILDPACK_VERSION="2.0-a9"
 OPT_BUILDPACK_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/d7c61c2c-835c-47f5-a351-f1f014556b04.gz"
 
-OPT_LIB_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/freetype-2.4.0.tar.gz"
 
 BIN_DIR=$(dirname $0)
 BUILD_DIR=$1
@@ -35,12 +34,6 @@ if [ -f www/Procfile ]; then
   mv www/Procfile .
 fi
 
-
-curl --silent --max-time 60 --location "$OPT_LIB_URL" | tar xz
-cd freetype-2.5.3
-./configure --enable-static
-make
-make install
 
 echo "-----> Extracting Apache $APACHE_VERSION PHP $PHP_VERSION build $BUILDPACK_VERSION"
 echo "-----> from $OPT_BUILDPACK_URL"
