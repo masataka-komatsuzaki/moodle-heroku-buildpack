@@ -8,7 +8,7 @@ set -e
 #APACHE_VERSION="2.4.6"
 APACHE_VERSION="2.4.7"
 APACHE_PATH="apache"
-PHP_VERSION=“5.4.11”
+PHP_VERSION="5.4.11"
 PHP_PATH="php"
 
 BIN_DIR=$(dirname $0)
