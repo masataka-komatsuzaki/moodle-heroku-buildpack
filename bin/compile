@@ -56,9 +56,9 @@ export LD_LIBRARY_PATH=$BUILD_DIR/local/lib
 export PATH=$PATH:$BUILD_DIR/bin
 
 # set a slug_id identifier
-slug_id=$(php/bin/php -r "echo md5(uniqid('', TRUE));")
-echo $slug_id > SLUG_ID
-echo "Creating Slug Identifier file with id: ${slug_id}"
+#slug_id=$(php/bin/php -r "echo md5(uniqid('', TRUE));")
+#echo $slug_id > SLUG_ID
+#echo "Creating Slug Identifier file with id: ${slug_id}"
 
 # Determine if an SSH bundle including ssh keys etc is included so we can access private composer repos
 # Create your bundle with 
