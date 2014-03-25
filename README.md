@@ -1,86 +1,131 @@
-Apache+PHP build pack
+Apache2.4+PHP5.4 build pack for Moodle
 ========================
 
 This is a build pack bundling PHP and Apache for Heroku apps.
 
-**Features:**
-* PHP 5.5.4 (PHP-FPM)
-* Apache HTTP Server 2.4.6
-* Composer Support
-* Opcache Enabled
-* PECL Memcached
-* GD support
-* igbinary support
-* mcrypt support (to support Laravel 4)
-* PostgreSQL support
-
 Configuration
 -------------
 
-The config files are bundled with the buildpack itself:
+The config files are bundled with the build pack itself:
 
 * conf/httpd.conf
 * conf/php.ini
+* conf/config.php (Moodle default configuration)
 
-Configure Heroku to use this buildpack repo AND branch
-
-    $ heroku config:set BUILDPACK_URL=git://github.com/winglian/heroku-buildpack-php.git#mpm-event-php55-fpm
-
-This buildpack also supports custom Document Roots in your application. Simply add an environment variable. If your document root is public in the root of your repo, then run
-    
-    $ heroku config:set WWWROOT=/public
-
-Composer
---------
-
-Composer support is built in. Simpy drop your composer.json into the root of your repository the buildpack will automatically install the requirements and dependencies into the dyno. Because composer dependencies are saved in the dyno, when you scale up, all the dynos are ensured to be identical. Please be aware that if for example github is down when you push to heroku, that the composer install will fail and you will have a broken dyno and you should roll-back.
-
-Composer Private Repository Support
------------------------------------
-
-This buildpack now supports private repositories. You should create a new ssh keypair, which you should tar and then AES encrypt and make publicly available. You can either store the encrypted bundle on S3 or a publicly available git repo that allows public access the raw contents. See <http://getcomposer.org/doc/05-repositories.md#using-private-repositories> for information on how to setup private repositories in your composer.json.
-
-    $ export SSH_BUNDLE_PASSWORD="Y0urSup3rS3cretP@ssw0rd"
-    $ heroku config:set SSH_BUNDLE_PASSWORD={$SSH_BUNDLE_PASSWORD}
-    $ cd /tmp
-    $ ssh-keygen -t rsa -b 2048
-    Generating public/private rsa key pair.
-    Enter file in which to save the key (~/.ssh/id_rsa): /tmp/.ssh/id_rsa
-    Enter passphrase (empty for no passphrase): 
-    Enter same passphrase again: 
-    Your identification has been saved in /tmp/.ssh/id_rsa.
-    Your public key has been saved in /tmp/.ssh/id_rsa.pub.
-    $ cat << 'EOF' > /tmp/.ssh/config
-    StrictHostKeyChecking no
-    UserKnownHostsFile=/dev/null
-    EOF
-    $ tar -czv .ssh | openssl enc -out ssh_bundle_enc -e -k $SSH_BUNDLE_PASSWORD -aes-128-cbc
-
-You will then need to upload ssh_bundle_enc to either S3 or save to a public git repo and allow authentication with /tmp/.ssh/id_rsa.pub to your private repository
-
-    $ cd -
-    $ heroku config:set SSH_BUNDLE_URL="http://s3.amazonaws.com/bucket/{path to folder containing ssh_bundle_enc}/ssh_bundle_enc"
-    $ heroku labs:enable user-env-compile
-
-
-Hacking with shell scripts
---------------------------
-
-This buildpack includes several hooks allowing you to add custom behavior when the dyno is compiled as well as when a dyno is spun up. By adding a .heroku/compile.sh script into the root of your repository (not the buildpack's repository), you can add additional hooks such as uploading static assets to your CDN, building the cache, etc. The .heroku/compile.sh file will be deleted before the dyno is saved and any other shell scripts in the .heroku directory will be executed when the dyno is spun up.
 
 Pre-compiling binaries
 ----------------------
 
-After building the binary below, update the OPT_BUILDPACK_URL variable in bin/compile to point to the url of the vulcan binary from Heroku
+Required software
+ - Ubuntu 10.04
+ - curl
+ - ANSI-C compiler
 
-    $ vulcan build -v -s ./build -p /tmp/build -c "./vulcan.sh"
+This script will set up a heroku cedar platform (Ubuntu 10.04)
+ 1. Compile apache 2.4.3 and install on /app/apache
+ 2. Compile php 5.4.11+ required extensions and install on /app/php
+
+    apt-get install curl
+    mkdir -p /app
+
+Prepare the filesystem
+
+    mkdir -p /tmp/build
+    cd /tmp/build
+
+Compiling Apache
+
+    curl -L http://www.carfab.com/apachesoftware/httpd/httpd-2.4.3.tar.gz | tar xzf -
+    cd httpd-2.4.3
+    cd srclib
+    curl http://www.us.apache.org/dist//apr/apr-1.4.6.tar.gz | tar xzf -
+    mv apr-1.4.6 apr
+    curl http://www.us.apache.org/dist//apr/apr-util-1.5.1.tar.gz | tar xzf -
+    mv apr-util-1.5.1 apr-util
+    cd ..
+    apt-get install libpcre3
+    apt-get install libpcre3-dev
+    ./configure --prefix=/app/apache --with-included-apr --enable-rewrite
+    make && make install
+    cd ..
+
+Apache libraries
+
+    mkdir -p /app/php/ext
+    cp /app/apache/lib/libapr-1.so.0 /app/php/ext
+    cp /app/apache/lib/libaprutil-1.so.0 /app/php/ext
+    cd /app/php/ext
+    ln -s libapr-1.so.0 libapr-1.so
+    ln -s libaprutil-1.so.0 libaprutil-1.so
+    cd /tmp/build
+
+Compiling PHP
+
+    apt-get install libxml2
+    apt-get install libxml2-dev
+    apt-get install libssl-dev
+    apt-get install libvpx-dev
+    apt-get install libjpeg-dev
+    apt-get install libpng-dev
+    apt-get install libXpm-dev
+    apt-get install libbz2-dev
+    apt-get install libmcrypt-dev
+    apt-get install libcurl4-openssl-dev
+    apt-get install libfreetype6-dev
+    apt-get install postgresql-server-dev-8.4
+
+    curl -L http://php.net/get/php-5.4.11.tar.gz/from/us1.php.net/mirror | tar xzf -
+    cd php-5.4.11
+    ./configure --prefix=/app/php --with-apxs2=/app/apache/bin/apxs --with-mysql --with-pdo-mysql --with-pgsql --with-pdo-pgsql --with-iconv --with-gd --with-curl=/usr/lib --with-config-file-path=/app/php --enable-soap=shared --enable-libxml --enable-simplexml --enable-session --with-xmlrpc --with-openssl --enable-mbstring --with-bz2 --with-zlib --with-gd --with-freetype-dir=/usr/lib --with-jpeg-dir=/usr/lib --with-png-dir=/usr/lib --with-xpm-dir=/usr/lib
+    make && make install
+    cd ..
+
+PHP Extensions
+
+    apt-get install libmysqlclient-dev
+    cd /app/php/ext
+    cp /usr/lib/libmysqlclient.so.16.0.0 .
+    ln -s libmysqlclient.so.16.0.0 libmysqlclient.so.16
+    ln -s libmysqlclient.so.16.0.0 libmysqlclient.so
+    cd /tmp/build
+
+Apache php module
+
+    cp /tmp/build/php-5.4.11/.libs/libphp5.so /app/apache/modules/
+
+APC
+
+    apt-get install autoconf
+    curl http://pecl.php.net/get/APC/3.1.14 | tar xzf -
+    cd APC-3.1.14
+    /app/php/bin/phpize
+    ./configure --enable-apc --enable-apc-mmap --with-php-config=/app/php/bin/php-config
+    make && make install
+    cp .libs/apc.so /app/php/ext
+    cd ..
+
+Create packages
+    cd /app
+    echo '2.4.3' > apache/VERSION
+    tar -zcvf apache-2.4.3.tar.gz apache
+    echo '5.4.11' > php/VERSION
+    tar -zcvf php-5.4.11.tar.gz php
+
+Upload to your Amazon S3 s3cmd
+
+    # s3cmd apache.tar.gz s3://yourbucket/path/to
+    # s3cmd php.tar.gz s3://yourbucket/path/to
+    # Dont forget to add a permission for everyone to read
+
+
 
 Hacking
 -------
 
 To change this buildpack, fork it on Github. Push up changes to your fork, then create a test app with --buildpack <your-github-url> and push to it.
 
+
 Meta
 ----
 
-Original buildpack by Pedro Belo. https://github.com/heroku/heroku-buildpack-php
+Froked from https://github.com/grahamjenson/heroku-buildpack-mahara

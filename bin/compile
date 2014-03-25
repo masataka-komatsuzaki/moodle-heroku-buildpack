@@ -5,13 +5,11 @@
 set -e
 
 # config
-APACHE_VERSION="2.4.6"
+#APACHE_VERSION="2.4.6"
+APACHE_VERSION="2.4.7"
 APACHE_PATH="apache"
-PHP_VERSION="5.5.4"
+PHP_VERSION=“5.4.11”
 PHP_PATH="php"
-BUILDPACK_VERSION="2.0-a9"
-OPT_BUILDPACK_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/d7c61c2c-835c-47f5-a351-f1f014556b04.gz"
-
 
 BIN_DIR=$(dirname $0)
 BUILD_DIR=$1
@@ -21,7 +19,6 @@ LP_DIR=`cd $(dirname $0); cd ..; pwd`
 # include .files when moving things around
 shopt -s dotglob
 
-echo "Build dir is $BUILD_DIR"
 cd $BUILD_DIR
 
 # move app things to www
@@ -29,120 +26,51 @@ mkdir -p $CACHE_DIR/www
 mv * $CACHE_DIR/www
 mv $CACHE_DIR/www .
 
-# move Procfile back to where it is expected
+# keep Procfile
 if [ -f www/Procfile ]; then
   mv www/Procfile .
 fi
 
+#APACHE_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/apache-$APACHE_VERSION.tar.gz"
+APACHE_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/apache-$APACHE_VERSION.tar.gz"
+echo "-----> Bundling Apache version $APACHE_VERSION"
+curl --silent --max-time 60 --location "$APACHE_URL" | tar xz
 
-echo "-----> Extracting Apache $APACHE_VERSION PHP $PHP_VERSION build $BUILDPACK_VERSION"
-echo "-----> from $OPT_BUILDPACK_URL"
-curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL" | tar xz
-
+#PHP_URL="https://s3-ap-southeast-2.amazonaws.com/ngson2000/php-$PHP_VERSION.tar.gz"
+PHP_URL="https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/php-$PHP_VERSION.tar.gz"
+echo "-----> Bundling PHP version $PHP_VERSION"
+curl --silent --max-time 60 --location "$PHP_URL" | tar xz
 # update config files
 cp $LP_DIR/conf/httpd.conf $APACHE_PATH/conf
-cp $LP_DIR/conf/php.ini php
-cp $LP_DIR/conf/php-fpm.conf $BUILD_DIR/php/etc/
-#PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/ext"
-#cp $LP_DIR/ext/zip.so /app/php/lib/php/extensions/no-debug-non-zts-20121212/
+cp $LP_DIR/conf/php.ini $PHP_PATH
+PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/no-debug-zts-20100525"
 
-# make php available on bin wtih symbolic link, use relative path so it works when remounted
-mkdir bin
-cd bin
-ln -s ../php/bin/php php
-cd ..
+PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/ext"
 
-export LD_LIBRARY_PATH=$BUILD_DIR/local/lib
-export PATH=$PATH:$BUILD_DIR/bin
+cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
+# make php available on bin
+mkdir -p bin
+ln -s /app/php/bin/php bin/php
 
-# set a slug_id identifier
-slug_id=$(php/bin/php -r "echo md5(uniqid('', TRUE));")
-echo $slug_id > SLUG_ID
-echo "Creating Slug Identifier file with id: ${slug_id}"
-
-# Determine if an SSH bundle including ssh keys etc is included so we can access private composer repos
-# Create your bundle with 
-# tar -czv .ssh | openssl enc -out ssh_bundle_enc -e -k $SSH_BUNDLE_PASSWORD -aes-128-cbc
-# the bundle's config should include directives for
-# StrictHostKeyChecking no
-# UserKnownHostsFile=/dev/null
-if [[ -n "$SSH_BUNDLE_URL" && -n "$SSH_BUNDLE_PASSWORD" ]]; then
-    cd ~
-    # download the bundle
-    curl --silent --max-time 60 --location "$SSH_BUNDLE_URL" -o ssh_bundle_enc
-    # decrypt the bundle
-    openssl enc -in ssh_bundle_enc -d -k $SSH_BUNDLE_PASSWORD -aes-128-cbc > ssh_bundle.tar.gz
-    # extract the bundle
-    tar -xzf ssh_bundle.tar.gz
-    # cleanup
-    rm ssh_bundle_enc
-    rm ssh_bundle.tar.gz
-    cd $BUILD_DIR
-fi
-
-echo "Installing Composer binary"
-#curl -s https://getcomposer.org/installer | $BUILD_DIR/bin/php -- --install-dir=bin
-curl -s https://s3-ap-northeast-1.amazonaws.com/miraica-buildpack/installer | $BUILD_DIR/bin/php -- --install-dir=bin
-mv bin/composer.phar bin/composer
-
-if [ -f $BUILD_DIR/www/composer.json ]; then
-  echo "Installing Composer dependencies"
-  cd $BUILD_DIR/www
-  $BUILD_DIR/bin/php $BUILD_DIR/bin/composer config -g github-protocols https
-  $BUILD_DIR/bin/php $BUILD_DIR/bin/composer install --prefer-dist --no-dev --optimize-autoloader
-  cd $BUILD_DIR
-fi
-
-if [ -d ~/.ssh ]; then
-    rm -rf ~/.ssh
-fi
+# create mahara data folder
+mkdir -p /app/moodledata
 
 cat >>boot.sh <<EOF
-echo "Checking for WWWROOT environment variable..."
-if [ -n "\${WWWROOT:+x}" ]; then
-  sed -ie "s%/app/www[^\\"]*%/app/www\$WWWROOT%" /app/apache/conf/httpd.conf
-fi
-
-export HW_ADDR=\`/sbin/ifconfig eth0 | grep HWaddr | awk '{print \$5}'\`
-echo "SetEnv HW_ADDR \$HW_ADDR" >> /app/apache/conf/httpd.conf;
-
-for var in \`env|cut -f1 -d=\`; do
-  echo "PassEnv \$var" >> /app/apache/conf/httpd.conf;
+for var in ¥`env|cut -f1 -d=¥`; do
+  echo "PassEnv ¥$var" >> /app/apache/conf/httpd.conf;
 done
 touch /app/apache/logs/error_log
 touch /app/apache/logs/access_log
-export PHP_ERROR_LOG=\`/app/php/bin/php -i | grep error_log | grep -v opcache | awk '{print \$5}'\`
-touch \$PHP_ERROR_LOG
-chmod 0777 \$PHP_ERROR_LOG
 tail -F /app/apache/logs/error_log &
 tail -F /app/apache/logs/access_log &
-tail -F \$PHP_ERROR_LOG &
-export LD_LIBRARY_PATH=/app/local/lib
-# export PHP_INI_SCAN_DIR=/app/php
-
-# let's check for hook scripts
-if [ -d www/.heroku ]; then
-  for file in www/.heroku/*.sh; do
-    /bin/bash \$file
-  done
-fi
-
-echo "Launching PHP FPM"
-/app/php/sbin/php-fpm -y /app/php/etc/php-fpm.conf -c /app/php/php.ini
-
+export LD_LIBRARY_PATH=/app/php/ext
+export PHP_INI_SCAN_DIR=/app/www
 echo "Launching apache"
-exec /app/apache/bin/httpd -DNO_DETACH
+#exec /app/apache/bin/httpd -DNO_DETACH
+exec /app/apache/bin/httpd
 EOF
 
 chmod +x boot.sh
 
 # clean the cache
-rm -rf $CACHE_DIR/*
-
-# run a post build script from the app
-
-if [ -d $BUILD_DIR/www/.heroku -a -f $BUILD_DIR/www/.heroku/compile.sh ]; then
-    chmod 0755 $BUILD_DIR/www/.heroku/compile.sh
-    /usr/bin/env bash $BUILD_DIR/www/.heroku/compile.sh
-    rm $BUILD_DIR/www/.heroku/compile.sh
-fi
+rm -rf $CACHE_DIR
