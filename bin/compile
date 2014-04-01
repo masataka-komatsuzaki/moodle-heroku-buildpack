@@ -70,6 +70,7 @@ tail -F /app/apache/logs/access_log &
 export LD_LIBRARY_PATH=/app/php/ext
 export PHP_INI_SCAN_DIR=/app/www
 echo "Launching apache"
+env LD_LIBRARY_PATH=/usr/lib ldd /app/apache/modules/libphp5.so
 exec /app/apache/bin/httpd -DNO_DETACH
 #exec /app/apache/bin/httpd
 EOF
