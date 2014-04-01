@@ -47,11 +47,11 @@ curl --silent --max-time 60 --location "$PHP_URL" | tar xz
 # update config files
 cp $LP_DIR/conf/httpd.conf $APACHE_PATH/conf
 cp $LP_DIR/conf/php.ini $PHP_PATH
-PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/no-debug-zts-20090626"
+PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/lib/php/extensions/no-debug-zts-20100525"
 
 #PHP_OPTS="-c $(pwd)/php/php.ini -d extension_dir=$(pwd)/php/ext"
 
-cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20090626/
+cp $LP_DIR/ext/zip.so $(pwd)/php/lib/php/extensions/no-debug-zts-20100525/
 # make php available on bin
 mkdir -p bin
 ln -s /app/php/bin/php bin/php
