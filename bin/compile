@@ -63,7 +63,7 @@ echo "Creating Slug Identifier file with id: ${slug_id}"
 # StrictHostKeyChecking no
 # UserKnownHostsFile=/dev/null
 if [[ -n "$SSH_BUNDLE_URL" && -n "$SSH_BUNDLE_PASSWORD" ]]; then
-    cd ~
+    cd ‾
     # download the bundle
     curl --silent --max-time 60 --location "$SSH_BUNDLE_URL" -o ssh_bundle_enc
     # decrypt the bundle
@@ -88,38 +88,38 @@ if [ -f $BUILD_DIR/www/composer.json ]; then
   cd $BUILD_DIR
 fi
 
-if [ -d ~/.ssh ]; then
-    rm -rf ~/.ssh
+if [ -d ‾/.ssh ]; then
+   # rm -rf ‾/.ssh
 fi
 
 cat >>boot.sh <<EOF
-export PATH=/app/bin:\$PATH
+export PATH=/app/bin:¥$PATH
 echo "Checking for WWWROOT environment variable..."
-if [ -n "\${WWWROOT:+x}" ]; then
-  sed -ie "s%/app/www[^\\"]*%/app/www\$WWWROOT%" /app/apache/conf/httpd.conf
+if [ -n "¥${WWWROOT:+x}" ]; then
+  sed -ie "s%/app/www[^¥¥"]*%/app/www¥$WWWROOT%" /app/apache/conf/httpd.conf
 fi
 
-export HW_ADDR=\`/sbin/ifconfig eth0 | grep HWaddr | awk '{print \$5}'\`
-echo "SetEnv HW_ADDR \$HW_ADDR" >> /app/apache/conf/httpd.conf;
+export HW_ADDR=¥`/sbin/ifconfig eth0 | grep HWaddr | awk '{print ¥$5}'¥`
+echo "SetEnv HW_ADDR ¥$HW_ADDR" >> /app/apache/conf/httpd.conf;
 
-for var in \`env|cut -f1 -d=\`; do
-  echo "PassEnv \$var" >> /app/apache/conf/httpd.conf;
+for var in ¥`env|cut -f1 -d=¥`; do
+  echo "PassEnv ¥$var" >> /app/apache/conf/httpd.conf;
 done
 touch /app/apache/logs/error_log
 touch /app/apache/logs/access_log
-export PHP_ERROR_LOG=\`/app/php/bin/php -i | grep error_log | grep -v opcache | awk '{print \$5}'\`
-touch \$PHP_ERROR_LOG
-chmod 0777 \$PHP_ERROR_LOG
+export PHP_ERROR_LOG=¥`/app/php/bin/php -i | grep error_log | grep -v opcache | awk '{print ¥$5}'¥`
+touch ¥$PHP_ERROR_LOG
+chmod 0777 ¥$PHP_ERROR_LOG
 tail -F /app/apache/logs/error_log &
 tail -F /app/apache/logs/access_log &
-tail -F \$PHP_ERROR_LOG &
+tail -F ¥$PHP_ERROR_LOG &
 export LD_LIBRARY_PATH=/app/local/lib
 # export PHP_INI_SCAN_DIR=/app/php
 
 # let's check for hook scripts
 if [ -d www/.heroku ]; then
   for file in www/.heroku/*.sh; do
-    /bin/bash \$file
+    /bin/bash ¥$file
   done
 fi
 
@@ -133,12 +133,12 @@ EOF
 chmod +x boot.sh
 
 # clean the cache
-rm -rf $CACHE_DIR/*
+#rm -rf $CACHE_DIR/*
 
 # run a post build script from the app
 
 if [ -d $BUILD_DIR/www/.heroku -a -f $BUILD_DIR/www/.heroku/compile.sh ]; then
     chmod 0755 $BUILD_DIR/www/.heroku/compile.sh
     /usr/bin/env bash $BUILD_DIR/www/.heroku/compile.sh
-    rm $BUILD_DIR/www/.heroku/compile.sh
+    #rm $BUILD_DIR/www/.heroku/compile.sh
 fi
