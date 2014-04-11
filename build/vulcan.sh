@@ -12,7 +12,6 @@ cd /tmp
 curl -O http://mirrors.us.kernel.org/ubuntu/pool/universe/m/mcrypt/mcrypt_2.6.8-1_amd64.deb
 curl -O http://mirrors.us.kernel.org/ubuntu/pool/universe/libm/libmcrypt/libmcrypt4_2.5.8-3.1_amd64.deb
 curl -O http://mirrors.us.kernel.org/ubuntu/pool/universe/libm/libmcrypt/libmcrypt-dev_2.5.8-3.1_amd64.deb
-curl -O http://ubuntu.mirrors.tds.net/ubuntu/pool/universe/p/php5/php5-intl_5.4.6-1ubuntu1.8_amd64.deb
 ls -tr *.deb > packages.txt
 while read l; do
     ar x $l
