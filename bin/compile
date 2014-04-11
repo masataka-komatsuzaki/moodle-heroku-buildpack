@@ -89,7 +89,7 @@ if [ -f $BUILD_DIR/www/composer.json ]; then
 fi
 
 if [ -d ‾/.ssh ]; then
-   # rm -rf ‾/.ssh
+    rm -rf ‾/.ssh
 fi
 
 cat >>boot.sh <<EOF
