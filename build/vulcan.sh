@@ -95,7 +95,7 @@ sed -e "s%/usr/local/apache2%/app/apache%" Makefile.AP2 > Makefile
 ${MAKE} && ${MAKE} install
 
 cd /tmp/php-5.5.11
-./configure --prefix=/app/php --with-pdo-pgsql --with-pgsql --with-mysql=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv --with-gd --with-freetype-dir=/usr/lib --with-curl=/usr/lib --with-config-file-path=/app/php --enable-soap=shared --with-openssl --enable-mbstring --with-bz2 --with-zlib --with-mhash --enable-mysqlnd --with-pear --with-mysqli=mysqlnd --with-jpeg-dir --with-png-dir --with-mcrypt=/app/local --enable-static --enable-fpm --with-pcre-dir=/app/local --disable-cgi --enable-zip
+./configure --prefix=/app/php --with-pdo-pgsql --with-pgsql --with-mysql=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv --with-gd --with-curl=/usr/lib --with-config-file-path=/app/php --enable-soap=shared --with-openssl --enable-mbstring --with-mhash --enable-mysqlnd --with-pear --with-mysqli=mysqlnd --with-jpeg-dir --with-png-dir --with-mcrypt=/app/local --enable-static --enable-fpm --with-pcre-dir=/app/local --disable-cgi --enable-zip
 ${MAKE}
 ${MAKE} install
 
@@ -118,11 +118,11 @@ ${MAKE} && ${MAKE} install
 
 cd /tmp/memcached-2.1.0
 /app/php/bin/phpize
-./configure --with-libmemcached-dir=/app/local ¥
-  --prefix=/app/php ¥
-  --enable-memcached-igbinary ¥
-  --enable-memcached-json ¥
-  --with-php-config=/app/php/bin/php-config ¥
+./configure --with-libmemcached-dir=/app/local \
+  --prefix=/app/php \
+  --enable-memcached-igbinary \
+  --enable-memcached-json \
+  --with-php-config=/app/php/bin/php-config \
   --enable-static
 ${MAKE} && ${MAKE} install
 
