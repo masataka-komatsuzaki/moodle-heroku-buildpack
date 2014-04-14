@@ -104,7 +104,7 @@ echo " " | /app/php/bin/pecl install memcache
 echo " " | /app/php/bin/pecl install apc-3.1.13
 echo " " | /app/php/bin/pecl install mongo
 /app/php/bin/pecl install igbinary
-/app/php/bin/pecl install intl
+echo " " | /app/php/bin/pecl install intl
 # cd /tmp/cyrus-sasl-2.1.25
 # ./configure --prefix=/app/local
 # ${MAKE} && ${MAKE} install
