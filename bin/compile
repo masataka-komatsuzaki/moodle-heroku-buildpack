@@ -9,6 +9,9 @@ APACHE_VERSION="2.4.9"
 APACHE_PATH="apache"
 PHP_VERSION="5.5.11"
 PHP_PATH="php"
+
+export NEW_RELIC_LICENSE_KEY="4e09c83d11e5c42a98b4fdcaf31ad40b1f4a11a7"
+
 BUILDPACK_VERSION="2.0-rc2"
 OPT_BUILDPACK_URL="http://miraica-module.herokuapp.com/output/cbab1acb-6a58-4732-ae8c-c5a92467f812"
 
@@ -123,12 +126,34 @@ if [ -d www/.heroku ]; then
   done
 fi
 
+if [ "_${NEW_RELIC_LICENSE_KEY}" ]; then
+export NEW_RELIC_LICENSE_KEY
+ echo "Launching NEWRELIC"
+# chmod 777 /app/local/newrelic-heroku/etc/newrelic.cfg
+# sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" /app/local/newrelic-heroku/etc/newrelic.cfg
+# chmod 777 /app/php/php.ini
+# sed -i "s|REPLACE_WITH_REAL_KEY|${NEW_RELIC_LICENSE_KEY}|g" /app/php/php.ini
+ /app/local/newrelic-heroku/bin/newrelic-license
+ /app/local/newrelic-heroku/bin/newrelic-daemon -c /app/local/newrelic-heroku/etc/newrelic.cfg -l /dev/null
+else
+ echo "Launching newrelic error: No license key"
+fi
+
 echo "Launching PHP FPM"
 /app/php/sbin/php-fpm -y /app/php/etc/php-fpm.conf -c /app/php/php.ini
 
 echo "Launching apache"
 exec /app/apache/bin/httpd -DNO_DETACH
 EOF
+
+# newrelic
+if [ "_${NEW_RELIC_LICENSE_KEY}" ]; then
+ echo "-----> Installing newrelic"
+ tar zxvf $LP_DIR/src/newrelic-heroku.tgz -C ${BUILD_DIR}/local
+ cp $LP_DIR/src/newrelic.so ${BUILD_DIR}/local/lib/newrelic.so
+else
+ echo "Installing newrelic error: No license key"
+fi
 
 chmod +x boot.sh
 
