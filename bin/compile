@@ -40,7 +40,7 @@ fi
 echo "-----> Extracting Apache $APACHE_VERSION PHP $PHP_VERSION build $BUILDPACK_VERSION"
 echo "-----> from $OPT_BUILDPACK_URL"
 curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL" | tar xz
-curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL2" | tar xz
+curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL2" | unzip xz
 mv timetravelerdata /app/www/html/
 
 # update config files
