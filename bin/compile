@@ -41,7 +41,7 @@ echo "-----> Extracting Apache $APACHE_VERSION PHP $PHP_VERSION build $BUILDPACK
 echo "-----> from $OPT_BUILDPACK_URL"
 curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL" | tar xz
 curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL2" | tar xz
-mv timetravelerdata /app/www/html/
+mv timetravelerdata $LP_DIR/html/
 
 # update config files
 cp $LP_DIR/conf/httpd.conf $APACHE_PATH/conf
