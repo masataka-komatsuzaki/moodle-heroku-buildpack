@@ -14,7 +14,7 @@ export NEW_RELIC_LICENSE_KEY="4e09c83d11e5c42a98b4fdcaf31ad40b1f4a11a7"
 
 BUILDPACK_VERSION="2.0-rc2"
 OPT_BUILDPACK_URL="http://miraica-module.herokuapp.com/output/cbab1acb-6a58-4732-ae8c-c5a92467f812"
-OPT_BUILDPACK_URL2="https://s3-ap-northeast-1.amazonaws.com/miraica-heroku/timetravelerdata.zip"
+OPT_BUILDPACK_URL2="https://s3-ap-northeast-1.amazonaws.com/miraica-heroku/timetravelerdata.tar.gz"
 
 BIN_DIR=$(dirname $0)
 BUILD_DIR=$1
@@ -40,7 +40,7 @@ fi
 echo "-----> Extracting Apache $APACHE_VERSION PHP $PHP_VERSION build $BUILDPACK_VERSION"
 echo "-----> from $OPT_BUILDPACK_URL"
 curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL" | tar xz
-curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL2" | unzip xz
+curl --silent --max-time 60 --location "$OPT_BUILDPACK_URL2" | tar xz
 mv timetravelerdata /app/www/html/
 
 # update config files
