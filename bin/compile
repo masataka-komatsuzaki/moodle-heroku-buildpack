@@ -29,7 +29,7 @@ cd $BUILD_DIR
 
 echo "-----> from $OPT_TAR_URL"
 curl --silent --max-time 60 --location "$OPT_TAR_URL" | tar xz
-mv ./g-wisedata ./html
+mv -f ./g-wisedata ./html
 
 # move app things to www
 mkdir -p $CACHE_DIR/www
